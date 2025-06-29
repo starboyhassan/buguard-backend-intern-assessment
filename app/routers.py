@@ -30,9 +30,15 @@ def get_tasks_by_priority(priority: str, db: Session = Depends(get_session)):
 
 # Update Task
 @router.put("/tasks/{task_id}", response_model=schemas.TaskResponse)
-def update_task(task_id: int, task: schemas.TaskUpdate, db: Session = Depends(get_session)):
+def update(task_id: int, task: schemas.TaskUpdate, db: Session = Depends(get_session)):
     updated_task = crud_logic.update_task(db, task_id, task)
     if not updated_task:
         raise HTTPException(status_code=404, detail="Task not found")
     return updated_task
 
+# Delete Task
+@router.delete("/tasks/{task_id}")
+def delete(task_id: int, db: Session = Depends(get_session)):
+    if not crud_logic.delete_task(db, task_id):
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {"Message": "Task deleted DONE"}
