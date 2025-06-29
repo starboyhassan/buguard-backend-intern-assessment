@@ -129,7 +129,7 @@ def bulk_update_tasks(db: Session, task_ids: list, update_data: TaskUpdate ) -> 
                 if field == "updated_at":
                     setattr(task, field, datetime.now(timezone.utc))
                 else:
-                    # Re-run validation for each task
+                    # validation for each task
                     if field == "title" and value:
                         value = value.strip()
                         if not value:
