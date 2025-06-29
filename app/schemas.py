@@ -46,7 +46,7 @@ class TaskResponse(TaskBase):
         orm_mode = True
 
 
-###########BULK OPERATIONS
+###########BULK OPERATIONS###############
 
 class BulkTaskUpdate(BaseModel):
     task_ids: List[int]

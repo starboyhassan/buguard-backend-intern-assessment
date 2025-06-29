@@ -102,3 +102,29 @@ def delete_task(db: Session, task_id: int) -> bool:
     db.delete(db_task)
     db.commit()
     return True
+
+
+###########BULK OPERATIONS###############
+def bulk_update_tasks(db: Session, task_ids: list, update_data: dict) -> int:
+    count = 0
+    for task_id in task_ids:
+        task = db.get(Task, task_id)
+        if task:
+            for field, value in update_data.items():
+                #skip id and created_at which shouldnt be updated
+                if field in ["id", "created_at"]:
+                    continue
+                    
+                #special handling for updated_at
+                if field == "updated_at":
+                    setattr(task, field, datetime.now(timezone.utc))
+                else:
+                    setattr(task, field, value)
+            
+            #add the updated_at in object
+            task.updated_at = datetime.now(timezone.utc)
+            db.add(task)
+            count += 1
+    db.commit()
+    return count
+
