@@ -23,3 +23,8 @@ def read_tasks(skip: int = Query(0, ge=0, description="Number of tasks to skip")
 def get_tasks_by_status(status: str, db: Session = Depends(get_session)):
     return crud_logic.get_tasks(db, status=status)
 
+# GET tasks based on priority
+@router.get("/tasks/priority/{priority}", response_model=List[schemas.TaskResponse])
+def get_tasks_by_priority(priority: str, db: Session = Depends(get_session)):
+    return crud_logic.get_tasks(db, priority=priority)
+
