@@ -154,12 +154,24 @@ def bulk_update_tasks(db: Session, task_ids: list, update_data: TaskUpdate ) -> 
 
 
 #bulk delete
-def bulk_delete_tasks(session: Session, task_ids: list) -> int:
+def bulk_delete_tasks(db: Session, task_ids: list) -> dict:
     count = 0
+    errors = []
+    
     for task_id in task_ids:
-        task = session.get(Task, task_id)
-        if task:
-            session.delete(task)
+        task = db.get(Task, task_id)
+        if not task:
+            errors.append(f"Task {task_id} not found")
+            continue
+            
+        try:
+            db.delete(task)
             count += 1
-    session.commit()
-    return count
+        except Exception as e:
+            errors.append(f"Task {task_id}: {str(e)}")
+    
+    if count > 0:
+        db.commit()
+    
+    return {"count": count, "errors": errors}
+

@@ -81,4 +81,3 @@ def delete(task_id: int, db: Session = Depends(get_session)):
 
 
 ###########BULK OPERATIONS###############
-
