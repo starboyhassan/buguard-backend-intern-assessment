@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from pydantic import BaseModel, field_validator # or pydantic v2 @validator is deprecated
-from typing import Optional
+from typing import Optional, List
 from .models import TaskStatus, TaskPriority
 
 # enusure you inhiret BaseModel for pydantic for Data Validation and Serialization
@@ -44,3 +44,16 @@ class TaskResponse(TaskBase):
 
     class Config:
         orm_mode = True
+
+
+###########BULK OPERATIONS
+
+class BulkTaskUpdate(BaseModel):
+    task_ids: List[int]
+    update_data: TaskUpdate  
+
+class BulkDeleteRequest(BaseModel):
+    task_ids: List[int]
+
+class BulkResponse(BaseModel):
+    count: int
