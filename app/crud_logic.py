@@ -105,6 +105,8 @@ def delete_task(db: Session, task_id: int) -> bool:
 
 
 ###########BULK OPERATIONS###############
+
+#bulk update
 def bulk_update_tasks(db: Session, task_ids: list, update_data: dict) -> int:
     count = 0
     for task_id in task_ids:
@@ -128,3 +130,15 @@ def bulk_update_tasks(db: Session, task_ids: list, update_data: dict) -> int:
     db.commit()
     return count
 
+
+
+#bulk delete
+def bulk_delete_tasks(session: Session, task_ids: list) -> int:
+    count = 0
+    for task_id in task_ids:
+        task = session.get(Task, task_id)
+        if task:
+            session.delete(task)
+            count += 1
+    session.commit()
+    return count
