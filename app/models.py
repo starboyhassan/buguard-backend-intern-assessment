@@ -1,9 +1,6 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field
-
-#enumerated types for fixed choices (TaskStatus, TaskPriority)
-from enum import Enum
-
+from enum import Enum #enumerated types for fixed choices (TaskStatus, TaskPriority)
 from datetime import datetime, timezone
 
 
