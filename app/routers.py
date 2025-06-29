@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlmodel import Session
 from . import crud_logic, schemas
 from .database import get_session
-from typing import List
-
+from typing import List, Optional
+from datetime import datetime
 
 router = APIRouter()
 
@@ -12,11 +12,47 @@ router = APIRouter()
 def create(task: schemas.TaskCreate, db: Session = Depends(get_session)):
     return crud_logic.create_task(db, task)
 
-# GET tasks with pagination and filter with status, priority
+
+
+# GET tasks with pagination and filters, search, sorting
 @router.get("/tasks", response_model=List[schemas.TaskResponse])
-def read_tasks(skip: int = Query(0, ge=0, description="Number of tasks to skip"), limit: int = Query(10, ge=1, le=1000, description="Maximum tasks to return"),
-                status: str = None, priority: str = None, session: Session = Depends(get_session)):
-    return crud_logic.get_tasks(session, skip, limit, status, priority)
+def read_tasks(
+
+    # pagination parameters
+    skip: int = Query(0, ge=0, description="num of tasks to skip"),
+    limit: int = Query(10, le=1000, description="max num of tasks to return"),
+    
+    # advanced filters parameters
+    status: Optional[str] = Query(None, description="filter by task status"),
+    priority: Optional[str] = Query(None, description="filter by task priority"),
+    assigned_to: Optional[str] = Query(None, description="filter by assigne"),
+    due_date_start: Optional[datetime] = Query(None, description="filter by due date starting from"),
+    due_date_end: Optional[datetime] = Query(None, description="filter by due date ending at"),
+    
+    # sorting parameters
+    sort_by: Optional[str] = Query("created_at", description="Field to sort by (id, title, status, priority, created_at, updated_at, due_date)"),
+    sort_order: Optional[str] = Query("desc", description="Sort order (asc or desc)"),
+    
+    # search Parameter
+    search: Optional[str] = Query(None, description="Search text in title or description"),
+    
+    db: Session = Depends(get_session)
+):
+    return crud_logic.get_tasks(
+        session=db,
+        skip=skip,
+        limit=limit,
+        status=status,
+        priority=priority,
+        assigned_to=assigned_to,
+        due_date_start=due_date_start,
+        due_date_end=due_date_end,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        search=search
+    )
+
+
 
 # GET tasks based on status
 @router.get("/tasks/status/{status}", response_model=List[schemas.TaskResponse])
