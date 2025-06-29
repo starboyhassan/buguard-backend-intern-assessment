@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlmodel import Session
 from . import crud_logic, schemas
 from .database import get_session
@@ -81,3 +81,42 @@ def delete(task_id: int, db: Session = Depends(get_session)):
 
 
 ###########BULK OPERATIONS###############
+
+#BULK UPDATE
+@router.put("/tasks/bulk", response_model=schemas.BulkResponse)
+def bulk_update_endpoint(bulk_update: schemas.BulkTaskUpdate, db: Session = Depends(get_session)):
+    result = crud_logic.bulk_update_tasks(db, bulk_update.task_ids, bulk_update.update_data)
+    
+
+    if result["errors"]:
+        # if all operations failed >> return 400
+        if result["count"] == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": "All updates failed",
+                    "errors": result["errors"]
+                })
+        
+        return result  # 200 OK with errors >> partial success
+    
+    return result  # 200 OK >> all success
+
+#BULK DELETE
+@router.delete("/tasks/bulk", response_model=schemas.BulkResponse)
+def bulk_delete_endpoint(delete_data: schemas.BulkDeleteRequest, db: Session = Depends(get_session)):
+    result = crud_logic.bulk_delete_tasks(db, delete_data.task_ids)
+    
+    if result["errors"]:
+        # if all operations failed >> return 400
+        if result["count"] == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": "All deletions failed",
+                    "errors": result["errors"]
+                })
+        
+        return result  # 200 OK with errors >> partial success
+    
+    return result  # 200 OK >> all success
