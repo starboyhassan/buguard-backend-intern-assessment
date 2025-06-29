@@ -1,4 +1,4 @@
-from sqlmodel import Session
+from sqlmodel import Session,select
 from .models import Task
 from .schemas import TaskCreate
 from fastapi import HTTPException
@@ -19,5 +19,14 @@ def get_task(db: Session, task_id: int) -> Task:
     if not task:
         raise HTTPException(status_code=404, detail="Worng ID, Task not found")
     return task
+
+# Get tasks with pagination and filter with status, priority
+def get_tasks(db: Session, skip: int = 0, limit: int = 100, status: str = None, priority: str = None):
+    query = select(Task).order_by(Task.id) # should use order_by to ensure all tasks orderd by ID
+    if status:
+        query = query.where(Task.status == status)
+    if priority:
+        query = query.where(Task.priority == priority)
+    return db.exec(query.offset(skip).limit(limit)).all()
 
 
