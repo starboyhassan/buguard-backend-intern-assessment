@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlmodel import Session
 from . import crud_logic, schemas
 from .database import get_session
@@ -27,4 +27,12 @@ def get_tasks_by_status(status: str, db: Session = Depends(get_session)):
 @router.get("/tasks/priority/{priority}", response_model=List[schemas.TaskResponse])
 def get_tasks_by_priority(priority: str, db: Session = Depends(get_session)):
     return crud_logic.get_tasks(db, priority=priority)
+
+# Update Task
+@router.put("/tasks/{task_id}", response_model=schemas.TaskResponse)
+def update_task(task_id: int, task: schemas.TaskUpdate, db: Session = Depends(get_session)):
+    updated_task = crud_logic.update_task(db, task_id, task)
+    if not updated_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return updated_task
 
