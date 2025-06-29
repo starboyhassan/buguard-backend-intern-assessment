@@ -1,7 +1,8 @@
 from sqlmodel import Session,select
 from .models import Task
-from .schemas import TaskCreate
+from .schemas import TaskCreate,TaskUpdate
 from fastapi import HTTPException
+from datetime import datetime, timezone
 
 
 # Create Task
@@ -9,9 +10,8 @@ def create_task(db: Session, task_input: TaskCreate) -> Task:
     task = Task.model_validate(task_input) # convert pydantic model (TaskCreate) into a SQLModel ORM instance (Task)
     db.add(task)
     db.commit()
-    db.refresh(task) #refreshe the task object with data from the database to ensure latest database-generated values #Without refresh(), task.id or created_at might still be None or outdated
-
-    return task # to know the created object's details
+    db.refresh(task) 
+    return task
 
 # Get Task by ID
 def get_task(db: Session, task_id: int) -> Task:
@@ -30,3 +30,19 @@ def get_tasks(db: Session, skip: int = 0, limit: int = 100, status: str = None, 
     return db.exec(query.offset(skip).limit(limit)).all()
 
 
+# Update Task
+def update_task(db: Session, task_id: int, task: TaskUpdate) -> Task:
+    db_task = db.get(Task, task_id)
+    if not db_task:
+        return None
+    
+    task_data = task.model_dump(exclude_unset=True)
+
+    for key, value in task_data.items():
+        setattr(db_task, key, value)
+
+    db_task.updated_at = datetime.now(timezone.utc)
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
