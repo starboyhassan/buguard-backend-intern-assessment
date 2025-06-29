@@ -78,3 +78,7 @@ def delete(task_id: int, db: Session = Depends(get_session)):
     if not crud_logic.delete_task(db, task_id):
         raise HTTPException(status_code=404, detail="Task not found")
     return {"Message": "Task deleted DONE"}
+
+
+###########BULK OPERATIONS###############
+

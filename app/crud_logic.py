@@ -107,12 +107,20 @@ def delete_task(db: Session, task_id: int) -> bool:
 ###########BULK OPERATIONS###############
 
 #bulk update
-def bulk_update_tasks(db: Session, task_ids: list, update_data: dict) -> int:
+def bulk_update_tasks(db: Session, task_ids: list, update_data: TaskUpdate ) -> dict:
+
+    update_dict = update_data.model_dump(exclude_unset=True)
     count = 0
+    errors = []
+    
     for task_id in task_ids:
         task = db.get(Task, task_id)
-        if task:
-            for field, value in update_data.items():
+        if not task:
+            errors.append(f"Task {task_id} not found")
+            continue
+            
+        try:
+            for field, value in update_dict.items():
                 #skip id and created_at which shouldnt be updated
                 if field in ["id", "created_at"]:
                     continue
@@ -121,14 +129,27 @@ def bulk_update_tasks(db: Session, task_ids: list, update_data: dict) -> int:
                 if field == "updated_at":
                     setattr(task, field, datetime.now(timezone.utc))
                 else:
+                    # Re-run validation for each task
+                    if field == "title" and value:
+                        value = value.strip()
+                        if not value:
+                            raise ValueError("Title cannot be empty")
+                    if field == "due_date" and value and value < datetime.now(timezone.utc):
+                        raise ValueError("Due date must be in the future")
+                        
                     setattr(task, field, value)
-            
+
             #add the updated_at in object
             task.updated_at = datetime.now(timezone.utc)
             db.add(task)
             count += 1
-    db.commit()
-    return count
+        except Exception as e:
+            errors.append(f"Task {task_id}: {str(e)}")
+    
+    if count > 0:
+        db.commit()
+    
+    return {"count": count, "errors": errors}
 
 
 
