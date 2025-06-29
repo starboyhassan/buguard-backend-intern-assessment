@@ -17,3 +17,9 @@ def create(task: schemas.TaskCreate, db: Session = Depends(get_session)):
 def read_tasks(skip: int = Query(0, ge=0, description="Number of tasks to skip"), limit: int = Query(10, ge=1, le=1000, description="Maximum tasks to return"),
                 status: str = None, priority: str = None, session: Session = Depends(get_session)):
     return crud_logic.get_tasks(session, skip, limit, status, priority)
+
+# GET tasks based on status
+@router.get("/tasks/status/{status}", response_model=List[schemas.TaskResponse])
+def get_tasks_by_status(status: str, db: Session = Depends(get_session)):
+    return crud_logic.get_tasks(db, status=status)
+
