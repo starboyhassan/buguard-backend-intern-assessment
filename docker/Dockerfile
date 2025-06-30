@@ -1,14 +1,18 @@
 FROM python:3.10-slim
 
-# Set environment variables
+#set environment variables
+#prevents python from creating .pyc bytecode files
 ENV PYTHONDONTWRITEBYTECODE 1
+#prevents output buffering in containers  
 ENV PYTHONUNBUFFERED 1
+
 ENV APP_HOME=/app
 
 # set work directory
 WORKDIR $APP_HOME
 
 # use system update install system dependencies
+# gcc: Installs the GNU Compiler Collection >> needed to build some Python packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc && \
     rm -rf /var/lib/apt/lists/*
