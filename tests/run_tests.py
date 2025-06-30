@@ -9,6 +9,7 @@ if __name__ == "__main__":
 
     pytest.main([
         "tests/test_create_task.py",
+        "tests/test_get_tasks.py",
         "-v",  # enable verbose mode to display more information about test cases
         "--tb=short"  # Shorter traceback format to display the essential error information
 
