@@ -22,7 +22,7 @@ class Task(SQLModel, table=True):
     description: Optional[str] = Field(default=None, max_length=1000)
     status: TaskStatus = Field(default=TaskStatus.pending)  # task status = pending by DEFAULT
     priority: TaskPriority = Field(default=TaskPriority.medium) # task priority = medium by DEFAULT
-    created_at: datetime = Field(default_factory=datetime.now(timezone.utc))  # this method 'datetime.now(timezone.utc)' will work with all python versions (even 3.11+)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc)) # this method 'datetime.now(timezone.utc)' will work with all python versions (even 3.11+)
     updated_at: Optional[datetime] = None
     due_date: Optional[datetime] = None
     assigned_to: Optional[str] = Field(default=None, max_length=100)

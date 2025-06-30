@@ -64,6 +64,15 @@ def get_tasks_by_status(status: str, db: Session = Depends(get_session)):
 def get_tasks_by_priority(priority: str, db: Session = Depends(get_session)):
     return crud_logic.get_tasks(db, priority=priority)
 
+# GET task by ID
+@router.get("/tasks/{task_id}", response_model=schemas.TaskResponse)
+def get_task_by_id(task_id: int, db: Session = Depends(get_session)):
+    task = crud_logic.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Task with ID {task_id} not found")
+    return task
+
+
 # Update Task
 @router.put("/tasks/{task_id}", response_model=schemas.TaskResponse)
 def update(task_id: int, task: schemas.TaskUpdate, db: Session = Depends(get_session)):

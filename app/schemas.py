@@ -3,6 +3,8 @@ from pydantic import BaseModel, field_validator # or pydantic v2 @validator is d
 from typing import Optional, List
 from .models import TaskStatus, TaskPriority
 
+
+
 # enusure you inhiret BaseModel for pydantic for Data Validation and Serialization
 class TaskBase(BaseModel):
     title: str
@@ -27,9 +29,17 @@ class TaskBase(BaseModel):
     @field_validator("due_date")
     @classmethod
     def due_date_validator(cls, ddate: Optional[datetime]):
-        if ddate and ddate <= datetime.now(timezone.utc): # this method 'datetime.now(timezone.utc)' will work with all python versions (even 3.11+)
-            raise ValueError('Due date must be in the future not Before or Equal the current datetime')
+        if ddate:
+            current_time = datetime.now(timezone.utc)            
+            # If ddate is naive, convert to UTC #A “naive” datetime in Python is simply a datetime object without any timezone
+            if ddate.tzinfo is None:
+                ddate = ddate.replace(tzinfo=timezone.utc)
+            
+            if ddate <= current_time:
+                raise ValueError('duedate must be in the future, not Before or Equal to current datetime')
+        
         return ddate
+
 
 class TaskCreate(TaskBase):
     pass
@@ -57,4 +67,4 @@ class BulkDeleteRequest(BaseModel):
 
 class BulkResponse(BaseModel):
     count: int
-    errors: List[str] = [] 
+    errors : List[str]=[]
