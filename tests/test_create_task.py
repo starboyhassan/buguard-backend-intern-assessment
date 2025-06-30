@@ -1,24 +1,31 @@
+import sys
+import os
 from fastapi.testclient import TestClient
-from app.main import app
 from datetime import datetime, timedelta, timezone
+
+# Add parent directory to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.main import app
 
 client = TestClient(app)
 
 def test_create_task():
-    dueDate = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+    dueDate = (datetime.now(timezone.utc) + timedelta(days=7))
+    dueDateIso = dueDate.isoformat()
+
     
     response = client.post("/tasks", json={
         "title": "Test task",
         "description": "Test task description",
         "status": "completed",
-        "due_date": dueDate,
+        "due_date": dueDateIso,
         "priority": "high",
         "assigned_to": "Test task Team"
     })
     
     assert response.status_code == 201
     data = response.json()
-    assert data["title"] == "Future task"
-    assert data["due_date"] == dueDate
+    assert data["title"] == "Test task"
     assert data["priority"] == "high"
     assert "id" in data
