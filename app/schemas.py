@@ -57,3 +57,4 @@ class BulkDeleteRequest(BaseModel):
 
 class BulkResponse(BaseModel):
     count: int
+    errors: List[str] = [] 
