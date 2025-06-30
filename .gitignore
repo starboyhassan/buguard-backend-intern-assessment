@@ -5,5 +5,4 @@ venv/
 #ignore python cache files
 __pycache__/
 
-#ignore sqlite sb file
-task.db
+
