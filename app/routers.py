@@ -39,7 +39,7 @@ def read_tasks(
     db: Session = Depends(get_session)
 ):
     return crud_logic.get_tasks(
-        session=db,
+        db=db,
         skip=skip,
         limit=limit,
         status=status,
