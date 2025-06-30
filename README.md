@@ -3,7 +3,7 @@
 **Task Management API Assessment for Buguard Backend Internship**
 ---
 **Candidate**: Mahmoud Hassan  
-**Email**: [mahmoudhassan7x@gmail.com](mahmoudhassan7x@gmail.com)  
+**Email**: [mahmoudhassan7x@gmail.com](mailto:mahmoudhassan7x@gmail.com)  
 **Mobile**: [+20 106 147 5854](tel:+201061475854)  
 **LinkedIn**: [linkedin.com/in/mahmoudhassan7](https://www.linkedin.com/in/mahmoudhassan7/)  
 **CV**: [https://drive.google.com/file/d/1NMQ09resLtINUzxWsAgSezzL8TFpiOKS/view?usp=drive_link](https://drive.google.com/file/d/1NMQ09resLtINUzxWsAgSezzL8TFpiOKS/view?usp=drive_link)  
