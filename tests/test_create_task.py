@@ -6,13 +6,13 @@ from datetime import datetime, timedelta, timezone
 # Add parent directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.main import app
+from app import app
 
 client = TestClient(app)
 
 def test_create_task():
     dueDate = (datetime.now(timezone.utc) + timedelta(days=7))
-    dueDateIso = dueDate.isoformat()
+    dueDateIso = dueDate.isoformat()  # JSON only knows about strings #the method taks datetime object and turns it into a string
 
     
     response = client.post("/tasks", json={
